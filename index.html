@@ -23,11 +23,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overscroll-behavior: none; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: #EDE7DA;
+    background: #F4EFE6;
   }
+  #root { height: 100%; }
   button { border: none; background: none; cursor: pointer; font-family: inherit; }
+  input, textarea { font-family: inherit; }
   .fade-in { animation: fadeIn .25s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
   .pulse { animation: pulse 1.6s ease-in-out infinite; }
@@ -550,23 +553,16 @@ const PROVIDER_REVIEWS = {
 /* ---------- shared bits ---------- */
 function PhoneChrome({ children }) {
   return (
-    <div style={{ position: "relative", width: 320, height: 660 }}>
+    <div style={{
+      position: "relative", width: "100%", height: "100%",
+      maxWidth: 560, margin: "0 auto",
+      display: "flex", flexDirection: "column"
+    }}>
       <div style={{
-        position: "absolute", inset: 0, borderRadius: "2.5rem", overflow: "hidden",
-        border: "6px solid #0E1613", backgroundColor: CREAM,
-        boxShadow: "0 30px 60px rgba(0,0,0,0.25)"
+        position: "relative", flex: 1, minHeight: 0, overflow: "hidden",
+        backgroundColor: CREAM, display: "flex", flexDirection: "column"
       }}>
-        <div style={{
-          position: "absolute", top: 0, left: 0, right: 0, height: 28,
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "0 24px", fontSize: 10, fontWeight: 500, color: INK, zIndex: 20
-        }}>
-          <span>9:41</span>
-          <span style={{ letterSpacing: 1 }}>●●●●  📶  🔋</span>
-        </div>
-        <div style={{ position: "absolute", inset: 0, paddingTop: 28, display: "flex", flexDirection: "column" }}>
-          {children}
-        </div>
+        {children}
       </div>
     </div>
   );
@@ -3772,13 +3768,21 @@ function App() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 16px", backgroundColor: "#EDE7DA" }}>
+    <div style={{
+      height: "100dvh", minHeight: "100vh", width: "100%",
+      display: "flex", flexDirection: "column",
+      backgroundColor: CREAM, overflow: "hidden"
+    }}>
       {session && !needsOnboarding && !onboardingSuccess && (
-        <div style={{ display: "flex", gap: 6, marginBottom: 18, backgroundColor: "#E3DCCE", padding: 4, borderRadius: 999 }}>
-          {[{ k: "cliente", l: "Flujo cliente" }, { k: "prestador", l: "Flujo prestador" }].map((o) => (
+        <div style={{
+          position: "fixed", top: 10, right: 10, zIndex: 50,
+          display: "flex", gap: 4, backgroundColor: "#E3DCCE", padding: 3, borderRadius: 999,
+          boxShadow: "0 4px 12px rgba(27,42,38,0.15)"
+        }}>
+          {[{ k: "cliente", l: "Cliente" }, { k: "prestador", l: "Prestador" }].map((o) => (
             <button key={o.k} onClick={() => setMode(o.k)}
               style={{
-                padding: "8px 18px", borderRadius: 999, fontSize: 12, fontWeight: 600,
+                padding: "6px 12px", borderRadius: 999, fontSize: 11, fontWeight: 600,
                 backgroundColor: mode === o.k ? INK : "transparent",
                 color: mode === o.k ? "#fff" : "#6B7A75"
               }}>
@@ -3808,18 +3812,6 @@ function App() {
           mode === "cliente" ? <ClientApp onLogout={handleLogout} /> : <ProviderApp onLogout={handleLogout} />
         )}
       </PhoneChrome>
-
-      <p style={{ fontSize: 11, color: "#8C8267", marginTop: 20, textAlign: "center", maxWidth: 260 }}>
-        {!session
-          ? "Regístrate y luego inicia sesión con tu usuario y contraseña."
-          : onboardingSuccess
-            ? "Estamos preparando tu cuenta..."
-            : needsOnboarding
-              ? "Completa estos pasos iniciales para configurar tu cuenta."
-              : mode === "cliente"
-                ? "Usa la barra inferior para moverte entre Inicio, Servicios y Perfil."
-                : "Activa \"en línea\" en el panel para ver las solicitudes de clientes cercanos."}
-      </p>
     </div>
   );
 }
